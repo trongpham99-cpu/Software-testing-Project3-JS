@@ -1,0 +1,21 @@
+{
+  "name": "software-testing-project-3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "login_with_out_DDT": "node with_out_DDT/feature_login/index.js",
+    "login_with_DDT": "node with_DDT/feature_login/index.js",
+    "message_with_out_DDT": "node with_out_DDT/feature_message/index.js",
+    "message_with_DDT": "node with_DDT/feature_message/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "excel4node": "^1.8.2",
+    "read-excel-file": "^5.8.0",
+    "selenium-webdriver": "^4.20.0",
+    "write-excel-file": "^1.4.30"
+  }
+}
