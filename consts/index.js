@@ -1,7 +1,7 @@
 const excel = require('excel4node');
 
-const writeLog = (log, path) => {
-    const excel = require('excel4node');
+const writeLog = (logs = [], path) => {
+    console.log(logs);
     const wb = new excel.Workbook();
     const ws = wb.addWorksheet('Sheet 1');
     const style = wb.createStyle({
@@ -19,13 +19,16 @@ const writeLog = (log, path) => {
     ws.cell(1, 6).string('Status').style(style);
     ws.cell(1, 7).string('Date Time').style(style);
 
-    ws.cell(2, 1).string(log.id);
-    ws.cell(2, 2).string(log.description);
-    ws.cell(2, 3).string(log.message);
-    ws.cell(2, 4).string(log.expected_result);
-    ws.cell(2, 5).string(log.actual_result);
-    ws.cell(2, 6).string(log.status);
-    ws.cell(2, 7).string(new Date().toLocaleString());
+    logs.forEach((log, index) => {
+        const row = index + 2;
+        ws.cell(row, 1).string(log.id);
+        ws.cell(row, 2).string(log.description);
+        ws.cell(row, 3).string(log.message);
+        ws.cell(row, 4).string(log.expected_result);
+        ws.cell(row, 5).string(log.actual_result);
+        ws.cell(row, 6).string(log.status);
+        ws.cell(row, 7).string(new Date().toLocaleString());
+    });
 
     wb.write(path, (err, stats) => {
         if (err) {

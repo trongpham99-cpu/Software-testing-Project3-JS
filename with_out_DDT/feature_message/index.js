@@ -80,7 +80,7 @@ async function testSendMessage({
         }
 
         const logPath = path.join(__dirname, 'log.xlsx');
-        writeLog(log, logPath);
+        writeLog([log], logPath);
     }
     catch (error) {
         console.error(error);

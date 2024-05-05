@@ -11,19 +11,27 @@ readXlsxFile(dataPath).then(async (rows) => {
         totalFail: 0
     }
 
+    const logs = []
     for (let i = 1; i < rows.length; i++) {
         const [tc_id, description, message, expected_result] = rows[i];
         const testCase = { tc_id, description, message, expected_result };
-        let result = await testSendMessage(testCase);
-        if (result === 1) {
+        let object = await testSendMessage(testCase);
+        if (object.result === 1) {
             resultTest.totalPass++;
         } else {
             resultTest.totalFail++;
         }
+        logs.push(object.log);
+
+        if (i === rows.length - 1) {
+            const logPath = path.join(__dirname, 'log.xlsx');
+            writeLog(logs, logPath);
+
+            const resultPath = path.join(__dirname, 'result.xlsx');
+            writeResult(resultTest, resultPath);
+        }
     }
 
-    const resultPath = path.join(__dirname, 'result.xlsx');
-    writeResult(resultTest, resultPath);
     console.log('Test done');
 }).catch((err) => {
     console.error(err);
@@ -105,9 +113,10 @@ async function testSendMessage({
             status: result === expected_result ? 'Pass' : 'Fail'
         }
 
-        const logPath = path.join(__dirname, 'log.xlsx');
-        writeLog(log, logPath);
-        return result === expected_result ? 1 : 0;
+        return {
+            log,
+            result: result === expected_result ? 1 : 0
+        }
     }
     catch (error) {
         console.error(error);

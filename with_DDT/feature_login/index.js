@@ -11,29 +11,27 @@ readXlsxFile(dataPath).then(async (rows) => {
         totalFail: 0
     }
 
-    console.log(rows);
-
+    let logs = []
     for (let i = 1; i < rows.length; i++) {
         const [tc_id, description, username, password, expected_result] = rows[i];
-        let result = await testLogin({ tc_id, description, username, password, expected_result })
-        console.log(result);
+        let object = await testLogin({ tc_id, description, username, password, expected_result })
+
+        if (object.result === 1) {
+            resultTest.totalPass++;
+        } else {
+            resultTest.totalFail++;
+        }
+        logs.push(object.log);
+
+        if (i === rows.length - 1) {
+            const logPath = path.join(__dirname, 'log.xlsx');
+            writeLog(logs, logPath);
+
+            const resultPath = path.join(__dirname, 'result.xlsx');
+            writeResult(resultTest, resultPath);
+        }
     }
-
-    // rows.forEach(async (row, index) => {
-    //     if (index === 0) return;
-    //     const [tc_id, description, username, password, expected_result] = row;
-    //     const result = await testLogin({ tc_id, description, username, password, expected_result });
-    //     if (result === 1) {
-    //         resultTest.totalPass++;
-    //     } else {
-    //         resultTest.totalFail++;
-    //     }
-
-    //     if (index === rows.length - 1) {
-    //         const resultPath = path.join(__dirname, 'result.xlsx');
-    //         writeResult(resultTest, resultPath);
-    //     }
-    // })
+    console.log('Test done');
 }).catch((err) => {
     console.error(err);
 })
@@ -81,9 +79,10 @@ async function testLogin({
             status: result === expected_result ? 'Pass' : 'Fail'
         }
 
-        const logPath = path.join(__dirname, 'log.xlsx');
-        writeLog(log, logPath);
-        return result === expected_result ? 1 : 0;
+        return {
+            result: result === expected_result ? 1 : 0,
+            log
+        }
     }
     catch (error) {
         console.error(error);

@@ -46,7 +46,7 @@ async function testLogin({
         }
 
         const logPath = path.join(__dirname, 'log.xlsx');
-        writeLog(log, logPath);
+        writeLog([log], logPath);
         console.log('Test login success');
     }
     catch (error) {
