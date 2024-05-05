@@ -11,11 +11,28 @@ readXlsxFile(dataPath).then(async (rows) => {
         totalFail: 0
     }
 
+    let driver = await new Builder().forBrowser('chrome').build();
+    await driver.get('https://school.moodledemo.net/login/index.php');
+
+    const loginInput = await driver.findElement(By.id('username'));
+    await loginInput.sendKeys('student');
+
+    const passwordInput = await driver.findElement(By.id('password'));
+    await passwordInput.sendKeys('moodle');
+
+    const loginButton = await driver.findElement(By.id('loginbtn'));
+    await loginButton.click();
+
+    await driver.get('https://school.moodledemo.net/message/index.php');
+
+    //click dropdown
+    await driver.sleep(5000);
+
     const logs = []
     for (let i = 1; i < rows.length; i++) {
         const [tc_id, description, message, expected_result] = rows[i];
         const testCase = { tc_id, description, message, expected_result };
-        let object = await testSendMessage(testCase);
+        let object = await testSendMessage(driver, testCase);
         if (object.result === 1) {
             resultTest.totalPass++;
         } else {
@@ -29,6 +46,8 @@ readXlsxFile(dataPath).then(async (rows) => {
 
             const resultPath = path.join(__dirname, 'result.xlsx');
             writeResult(resultTest, resultPath);
+
+            await driver.quit();
         }
     }
 
@@ -37,30 +56,13 @@ readXlsxFile(dataPath).then(async (rows) => {
     console.error(err);
 })
 
-async function testSendMessage({
+async function testSendMessage(driver, {
     tc_id,
     description,
     message,
     expected_result,
 }) {
-    let driver = await new Builder().forBrowser('chrome').build();
-
     try {
-        await driver.get('https://school.moodledemo.net/login/index.php');
-
-        const loginInput = await driver.findElement(By.id('username'));
-        await loginInput.sendKeys('student');
-
-        const passwordInput = await driver.findElement(By.id('password'));
-        await passwordInput.sendKeys('moodle');
-
-        const loginButton = await driver.findElement(By.id('loginbtn'));
-        await loginButton.click();
-
-        await driver.get('https://school.moodledemo.net/message/index.php');
-
-        //click dropdown
-        await driver.sleep(5000);
         const toggle_button = await driver.findElement(By.xpath('/html/body/div[2]/div[3]/div/div[2]/div/section/div/div/div/div/div[1]/div/div[2]/div[1]/div/div[1]/div[1]/button'));
 
         //check toggle is open or close
@@ -120,8 +122,5 @@ async function testSendMessage({
     }
     catch (error) {
         console.error(error);
-    }
-    finally {
-        await driver.quit();
     }
 }

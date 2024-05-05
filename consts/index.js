@@ -1,7 +1,6 @@
 const excel = require('excel4node');
 
 const writeLog = (logs = [], path) => {
-    console.log(logs);
     const wb = new excel.Workbook();
     const ws = wb.addWorksheet('Sheet 1');
     const style = wb.createStyle({
